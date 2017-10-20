@@ -14,9 +14,6 @@ const
     pg = require('pg'),
     request = require('request');
 
-// Use dotenv to allow local running with environment variables
-require('dotenv').load();
-
 const
     VERIFY_TOKEN = process.env.VERIFY_TOKEN,
     ACCESS_TOKEN = process.env.ACCESS_TOKEN,
@@ -65,19 +62,19 @@ app.use(bodyParser.json({ verify: verifyRequestSignature }));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
-// List out all the thanks recorded in the database
+// List out all the kudos recorded in the database
 app.get('/', function (request, response) {
     pg.connect(DATABASE_URL, function(err, client, done) {
         if(err) {
             console.error(err);
             return;
         }
-        client.query('SELECT * FROM thanks', function(err, result) {
+        client.query('SELECT * FROM kudos', function(err, result) {
             done();
             if (err) {
                 console.error(err); response.send('Error ' + err);
             } else {
-                response.render('pages/thanks', {results: result.rows} );
+                response.render('pages/kudos', {results: result.rows} );
             }
         });
     });
@@ -145,36 +142,36 @@ app.post('/webhook', function(request, response) {
                             query_inserts.push(`(now(),'${permalink_url}','${recipient}','${manager}','${sender}','${message}')`);
                         });
                         var interval = '1 week';
-                        let query = 'INSERT INTO thanks VALUES '
+                        let query = 'INSERT INTO kudos VALUES '
                             + query_inserts.join(',')
-                            + `; SELECT * FROM thanks WHERE create_date > now() - INTERVAL '${interval}';`;
+                            + `; SELECT * FROM kudos WHERE create_date > now() - INTERVAL '${interval}';`;
                         pg.connect(DATABASE_URL, function(err, client, done) {
                             client.query(query, function(err, result) {
                                 done();
                                 if (err) {
                                     console.error(err);
                                 } else if (result) {
-                                    var summary = 'Thanks received!\n';
-                                    // iterate through result rows, count number of thanks sent
-                                    var sender_thanks_sent = 0;
+                                    var summary = 'Kudos received!\n';
+                                    // iterate through result rows, count number of kudos sent
+                                    var sender_kudos_sent = 0;
                                     result.rows.forEach(function(row) {
-                                        if(row.sender == sender) sender_thanks_sent++;
+                                        if(row.sender == sender) sender_kudos_sent++;
                                     });
-                                    summary += `@[${sender}] has sent ${sender_thanks_sent} thanks in the last ${interval}\n`;
+                                    summary += `@[${sender}] has sent ${sender_kudos_sent} kudos in the last ${interval}\n`;
 
-                                    // Iterate through recipients, count number of thanks received
+                                    // Iterate through recipients, count number of kudos received
                                     recipients.forEach(function(recipient) {
-                                        let recipient_thanks_received = 0;
+                                        let recipient_kudos_received = 0;
                                         result.rows.forEach(function(row) {
-                                            if(row.recipient == recipient) recipient_thanks_received++;
+                                            if(row.recipient == recipient) recipient_kudos_received++;
                                         });
                                         if(managers[recipient]) {
-                                            summary += `@[${recipient}] has received ${recipient_thanks_received} thanks in the last ${interval}. Heads up to @[${managers[recipient]}].\n`;
+                                            summary += `@[${recipient}] has received ${recipient_kudos_received} kudos in the last ${interval}. Heads up to @[${managers[recipient]}].\n`;
                                         } else {
-                                            summary += `@[${recipient}] has received ${recipient_thanks_received} thanks in the last ${interval}. I don't know their manager.\n`;
+                                            summary += `@[${recipient}] has received ${recipient_kudos_received} kudos in the last ${interval}. I don't know their manager.\n`;
                                         }
                                     });
-                                    // Comment reply with thanks stat summary
+                                    // Comment reply with kudos stat summary
                                     graphapi({
                                         url: '/' + mention_id + '/comments',
                                         method: 'POST',

@@ -1,12 +1,12 @@
-# Thanks Bot for Workplace
+# Kudos Bot for Workplace
 
-Thanks Bot is a lightweight employee recognition tool for Workplace, which allows people to thank their peers in group posts and comments. Thanks Bot keeps track of recognition and alerts managers with a summary of recent recognition stats.
+Kudos Bot is a lightweight employee recognition tool for Workplace, which allows people to thank their peers in group posts and comments. Kudos Bot keeps track of recognition and alerts managers with a summary of recent recognition stats.
 
-*Thanks Bot requires **Read group content** and **Manage group content** permissions*
+*Kudos Bot requires **Read group content** and **Manage group content** permissions*
 
 ## Database Setup
 
-This bot uses a Postgres database for storing previous thanks events. To use the bot, create a database table with the following fields:
+This bot uses a Postgres database for storing previous kudos events. To use the bot, create a database table with the following fields:
 
 * `create_date` (date)
 * `permalink_url` (text)
@@ -18,12 +18,12 @@ This bot uses a Postgres database for storing previous thanks events. To use the
 You can create the table using the following command:
 
 ```
-create table thanks (create_date date, permalink_url text, recipient text, recipient_manager text, sender text, message text);
+create table kudos (create_date date, permalink_url text, recipient text, recipient_manager text, sender text, message text);
 ```
 
 ## Installation
 
-On the **Integrations** tab of the **Admin Dashboard**, create a custom integration app named "Thanks" with the following permissions:
+On the **Integrations** tab of the **Admin Dashboard**, create a custom integration app named "Kudos" with the following permissions:
 
 * Read all groups
 * Manage content
@@ -38,10 +38,10 @@ Mention the bot by name in a group post or comment, using the @-mention typeahea
 
 Example: 
 
-> "**Thanks** **Connor Treacy** for providing clear installation instructions."
+> "**Kudos** **Connor Treacy** for providing clear installation instructions."
 
-The bot should like the post, then follow up with a comment message mentioning the sender, recipient, and recipient's manager summarising recent 'thanks' stats.
+The bot should like the post, then follow up with a comment message mentioning the sender, recipient, and recipient's manager summarising recent 'kudos' stats.
 
 ## Summary Report
 
-Go to `https://{your host}` to see a table of all thanks messages sent. 
+Go to `https://{your host}` to see a table of all kudos messages sent. 
