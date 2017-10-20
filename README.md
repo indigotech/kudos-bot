@@ -1,5 +1,7 @@
 # Kudos Bot for Workplace
 
+Based on `Thanks Bot for Workplace` sample - https://github.com/fbsamples/workplace-platform-samples/tree/master/ThanksBot
+
 Kudos Bot is a lightweight employee recognition tool for Workplace, which allows people to thank their peers in group posts and comments. Kudos Bot keeps track of recognition and alerts managers with a summary of recent recognition stats.
 
 *Kudos Bot requires **Read group content** and **Manage group content** permissions*
