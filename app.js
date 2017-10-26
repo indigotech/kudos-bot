@@ -95,14 +95,8 @@ app.get('/webhook', function(request, response) {
 // Handle webhook payloads from Facebook
 app.post('/webhook', function(request, response) {
     if(request.body && request.body.entry) {
-        console.log(request.body.entry);
-        console.log('entries');
         request.body.entry.forEach(function(entry) {
-            console.log(entry);
-            console.log('changes:');
             entry.changes.forEach(function(change) {
-                console.log(change);
-                console.log(change.value.message_tags);
                 if(change.field === 'mention') {
                     let mention_id = (change.value.item === 'comment') ?
                         change.value.comment_id : change.value.post_id;
