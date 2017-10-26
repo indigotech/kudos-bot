@@ -114,6 +114,18 @@ app.post('/webhook', function(request, response) {
                         recipients = [],
                         query_inserts = [];
 
+                    if (!permalink_url) {
+                        permalink_url = 'https://work.facebook.com/groups/'
+                            + change.value.post_id.split('_')[0]
+                            + '/permalink/'
+                            + change.value.post_id.split('_')[1];
+
+                        if (change.value.comment_id) {
+                            permalink_url += '/?comment_id='
+                                + change.value.comment_id.split('_')[1];
+                        }
+                    }
+
                     message_tags.forEach(function(message_tag) {
                         // Ignore page / group mentions
                         if(message_tag.type !== 'user') return;
