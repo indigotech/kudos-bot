@@ -95,6 +95,7 @@ app.get('/webhook', function(request, response) {
 // Handle webhook payloads from Facebook
 app.post('/webhook', function(request, response) {
     if(request.body && request.body.entry) {
+        console.log(request.body.entry);
         request.body.entry.forEach(function(entry) {
             entry.changes.forEach(function(change) {
                 if(change.field === 'mention') {
@@ -112,7 +113,6 @@ app.post('/webhook', function(request, response) {
                         sender = change.value.sender_id,
                         permalink_url = change.value.permalink_url,
                         recipients = [],
-                        managers = [],
                         query_inserts = [];
 
                     message_tags.forEach(function(message_tag) {
@@ -121,69 +121,48 @@ app.post('/webhook', function(request, response) {
                         // Add the recipient to a list, for later retrieving their manager
                         recipients.push(message_tag.id);
                     });
-                    // Get recipients' managers in bulk using the ?ids= batch fetching method
-                    graphapi({
-                        url: '/',
-                        qs: {
-                            ids: recipients.join(','),
-                            fields: 'managers'
-                        }
-                    }, function(error,res,body) {
-                        // Add a data row for the insert query
-                        recipients.forEach(function(recipient) {
-                            // Check if we found their manager
-                            let manager = '';
-                            if(body
-                                && body[recipient]
-                                && body[recipient].managers
-                                && body[recipient].managers.data[0])
-                                manager = body[recipient].managers.data[0].id;
-                            managers[recipient] = manager;
-                            query_inserts.push(`(now(),'${permalink_url}','${recipient}','${manager}','${sender}','${message}')`);
-                        });
-                        var interval = '1 week';
-                        let query = 'INSERT INTO kudos VALUES '
-                            + query_inserts.join(',')
-                            + `; SELECT * FROM kudos WHERE create_date > now() - INTERVAL '${interval}';`;
-                        pg.connect(DATABASE_URL, function(err, client, done) {
-                            client.query(query, function(err, result) {
-                                done();
-                                if (err) {
-                                    console.error(err);
-                                } else if (result) {
-                                    var summary = 'Kudos received!\n';
-                                    // iterate through result rows, count number of kudos sent
-                                    var sender_kudos_sent = 0;
-                                    result.rows.forEach(function(row) {
-                                        if(row.sender == sender) sender_kudos_sent++;
-                                    });
-                                    summary += `@[${sender}] has sent ${sender_kudos_sent} kudos in the last ${interval}\n`;
+                    // Add a data row for the insert query
+                    recipients.forEach(function(recipient) {
+                        query_inserts.push(`(now(),'${permalink_url}','${recipient}','${sender}','${message}')`);
+                    });
+                    var interval = '1 month';
+                    let query = 'INSERT INTO kudos VALUES '
+                        + query_inserts.join(',')
+                        + `; SELECT * FROM kudos WHERE create_date > now() - INTERVAL '${interval}';`;
+                    pg.connect(DATABASE_URL, function(err, client, done) {
+                        client.query(query, function(err, result) {
+                            done();
+                            if (err) {
+                                console.error(err);
+                            } else if (result) {
+                                var summary = 'Kudos received!\n';
+                                // iterate through result rows, count number of kudos sent
+                                var sender_kudos_sent = 0;
+                                result.rows.forEach(function(row) {
+                                    if(row.sender == sender) sender_kudos_sent++;
+                                });
+                                summary += `@[${sender}] has sent ${sender_kudos_sent} kudos in the last ${interval}\n`;
 
-                                    // Iterate through recipients, count number of kudos received
-                                    recipients.forEach(function(recipient) {
-                                        let recipient_kudos_received = 0;
-                                        result.rows.forEach(function(row) {
-                                            if(row.recipient == recipient) recipient_kudos_received++;
-                                        });
-                                        if(managers[recipient]) {
-                                            summary += `@[${recipient}] has received ${recipient_kudos_received} kudos in the last ${interval}. Heads up to @[${managers[recipient]}].\n`;
-                                        } else {
-                                            summary += `@[${recipient}] has received ${recipient_kudos_received} kudos in the last ${interval}. I don't know their manager.\n`;
-                                        }
+                                // Iterate through recipients, count number of kudos received
+                                recipients.forEach(function(recipient) {
+                                    let recipient_kudos_received = 0;
+                                    result.rows.forEach(function(row) {
+                                        if(row.recipient == recipient) recipient_kudos_received++;
                                     });
-                                    // Comment reply with kudos stat summary
-                                    graphapi({
-                                        url: '/' + mention_id + '/comments',
-                                        method: 'POST',
-                                        qs: {
-                                            message: summary
-                                        }
-                                    }, function(error,res,body) {
-                                        console.log('Comment reply', mention_id);
-                                    });
-                                }
-                                response.sendStatus(200);
-                            });
+                                    summary += `@[${recipient}] has received ${recipient_kudos_received} kudos in the last ${interval}.\n`;
+                                });
+                                // Comment reply with kudos stat summary
+                                graphapi({
+                                    url: '/' + mention_id + '/comments',
+                                    method: 'POST',
+                                    qs: {
+                                        message: summary
+                                    }
+                                }, function(error,res,body) {
+                                    console.log('Comment reply', mention_id);
+                                });
+                            }
+                            response.sendStatus(200);
                         });
                     });
                 }
