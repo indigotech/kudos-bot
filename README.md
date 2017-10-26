@@ -2,7 +2,7 @@
 
 Based on `Thanks Bot for Workplace` sample - https://github.com/fbsamples/workplace-platform-samples/tree/master/ThanksBot
 
-Kudos Bot is a lightweight employee recognition tool for Workplace, which allows people to thank their peers in group posts and comments. Kudos Bot keeps track of recognition and alerts managers with a summary of recent recognition stats.
+Kudos Bot is a lightweight employee recognition tool for Workplace, which allows people to thank their peers in group posts and comments. Kudos Bot keeps track of recognition.
 
 *Kudos Bot requires **Read group content** and **Manage group content** permissions*
 
@@ -13,14 +13,13 @@ This bot uses a Postgres database for storing previous kudos events. To use the 
 * `create_date` (date)
 * `permalink_url` (text)
 * `recipient` (text)
-* `recipient_manager` (text)
 * `sender` (text)
 * `message` (text)
 
 You can create the table using the following command:
 
 ```
-create table kudos (create_date date, permalink_url text, recipient text, recipient_manager text, sender text, message text);
+create table kudos (create_date date, permalink_url text, recipient text, sender text, message text);
 ```
 
 ## Installation
@@ -42,7 +41,7 @@ Example:
 
 > "**Kudos** **Connor Treacy** for providing clear installation instructions."
 
-The bot should like the post, then follow up with a comment message mentioning the sender, recipient, and recipient's manager summarising recent 'kudos' stats.
+The bot should like the post, then follow up with a comment message mentioning the sender and the recipient, summarising recent 'kudos' stats.
 
 ## Summary Report
 
