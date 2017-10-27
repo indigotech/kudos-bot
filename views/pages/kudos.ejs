@@ -24,8 +24,8 @@
     <tr>
         <td><a href="<%= r.permalink_url %>">Link</a></td>
         <td><%= r.create_date %></td>
-        <td><%= r.recipient %></td>
-        <td><%= r.sender %></td>
+        <td><a href="https://work.facebook.com/profile.php?id=<%= r.recipient %>"><%= r.recipient %></a></td>
+        <td><a href="https://work.facebook.com/profile.php?id=<%= r.sender %>"><%= r.sender %></a></td>
         <td><%= r.message %></td>
     </tr>
     <% }); %>
