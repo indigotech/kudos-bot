@@ -69,7 +69,7 @@ app.get('/', function (request, response) {
             console.error(err);
             return;
         }
-        client.query('SELECT * FROM kudos', function(err, result) {
+        client.query('SELECT DISTINCT * FROM kudos', function(err, result) {
             done();
             if (err) {
                 console.error(err); response.send('Error ' + err);
@@ -139,7 +139,7 @@ app.post('/webhook', function(request, response) {
                     var interval = '1 month';
                     let query = 'INSERT INTO kudos VALUES '
                         + query_inserts.join(',')
-                        + `; SELECT * FROM kudos WHERE create_date > now() - INTERVAL '${interval}';`;
+                        + `; SELECT DISTINCT * FROM kudos WHERE create_date > now() - INTERVAL '${interval}';`;
                     pg.connect(DATABASE_URL, function(err, client, done) {
                         client.query(query, function(err, result) {
                             done();
