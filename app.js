@@ -100,13 +100,7 @@ app.post('/webhook', function(request, response) {
                 if(change.field === 'mention') {
                     let mention_id = (change.value.item === 'comment') ?
                         change.value.comment_id : change.value.post_id;
-                    // Like the post or comment to indicate acknowledgement
-                    graphapi({
-                        url: '/' + mention_id + '/likes',
-                        method: 'POST'
-                    }, function(error,res,body) {
-                        console.log('Like', mention_id);
-                    });
+
                     let message = change.value.message,
                         message_tags = change.value.message_tags,
                         sender = change.value.sender_id,
