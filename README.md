@@ -35,13 +35,13 @@ Deploy the code to a node.js hosting service and use the **Edit custom integrati
 
 ## Usage
 
-Mention the bot by name in a group post or comment, using the @-mention typeahead, then mention one or more employees and add a message describing the reason why they're being thanked. 
+Mention the bot by name in a group post or comment, using the @-mention typeahead, then mention one or more employees and add a message describing the reason why they're receiving kudos. 
 
 Example: 
 
 > "**Kudos** **Connor Treacy** for providing clear installation instructions."
 
-The bot should like the post, then follow up with a comment message mentioning the sender and the recipient, summarising recent 'kudos' stats.
+The bot should follow up with a comment message mentioning the sender and the recipient, summarising recent 'kudos' stats.
 
 ## Summary Report
 
